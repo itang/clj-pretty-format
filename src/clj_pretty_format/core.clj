@@ -32,14 +32,30 @@
 
 (defn- pretty-date-simple [that]
   (let [now (moment)
-        cal-now (date->calendar now)
-        cal-that (date->calendar that)]
-
-        ))
+        now-time (.getTime ^Date now)
+        that-time (.getTime ^Date that)
+        btw (/ (- now-time that-time) 1000.0)
+        abtw (Math/abs btw)]
+        (cond
+          (< abtw 10) "刚刚"
+          (< abtw 60) (format "%.0f秒%s" abtw (if (pos? btw) "前" "后"))
+          (< abtw (* 60 60)) (format "%.0f分%s" (/ abtw 60) (if (pos? btw) "前" "后"))
+          (< abtw (* 60 60 24)) (format "%.0f小时%s" (/ abtw (* 60 60)) (if (pos? btw) "前" "后"))
+          (< abtw (* 60 60 24 365)) (format "%.0f天%s" (/ abtw (* 60 60 24)) (if (pos? btw) "前" "后"))
+          :else (format-date that "yyyy年M月d日")
+          )))
 
 (defn- stage-of-day [that]
   (let [h (hours that)]
-    ))
+    (cond
+      (and (>= h 0) (< h 5)) "深夜"
+      (and (>= h 5) (< h 7)) "今天凌晨"
+      (and (>= h 7) (< h 9)) "今天早上"
+      (and (>= h 9) (< h 11)) "今天上午"
+      (and (>= h 11) (< h 14)) "今天中午"
+      (and (>= h 14) (< h 18)) "今天下午"
+      (and (>= h 18) (< h 24)) "今晚"
+      :else "")))
 
 (defn- pretty-date-douban [that]
   (let [now (moment)

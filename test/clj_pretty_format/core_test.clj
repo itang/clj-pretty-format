@@ -6,6 +6,7 @@
 (deftest pretty-format-test
   (testing "test"
     (spit "D:/s.txt" [
+    (pretty-format (Date.))
     (pretty-format (Date. 100 0 1))
 
     (pretty-format (Date. 112 0 1))
@@ -50,5 +51,5 @@
     (pretty-format (Date. 113 5 22))
 
     (pretty-format (Date. 114 1 1))
-    (pretty-format (Date. 114 1 1) :style :n)
+    (pretty-format (Date. 114 1 1) :style :simple)
     ])))
