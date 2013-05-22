@@ -17,16 +17,18 @@
 (defn- date->calendar [d]
   (doto (Calendar/getInstance) (.setTime d)))
 
-(defn- get-filed [x f] 
-  (let [c (if (instance? x java.util.Date (date->calendar x)) x)]
+(defn- get-filed [x f]
+  (let [c (if (instance? java.util.Date x)
+            (date->calendar x)
+            x)]
     (.get ^Calendar c f)))
 
 (defn- year [c] (get-filed c Calendar/YEAR))
 (defn- month [c] (get-filed c Calendar/MONTH))
 (defn- date [c] (get-filed c Calendar/DAY_OF_MONTH))
-(defn- hours[c] (get-filed c Calendar/HOUR_OF_DAY))
-(defn- minutes[c] (get-filed c Calendar/MINUTE))
-(defn- seconds[c] (get-filed c Calendar/SECOND))
+(defn- hours [c] (get-filed c Calendar/HOUR_OF_DAY))
+(defn- minutes [c] (get-filed c Calendar/MINUTE))
+(defn- seconds [c] (get-filed c Calendar/SECOND))
 
 (defn- pretty-date-simple [that]
   (let [now (moment)
@@ -68,7 +70,7 @@
 
 (defn- pretty-format-date
   [dateable & [{:keys [style] :or {style :douban} :as opts}]]
-  (let [date (cond instance? dateable
+  (let [date (condp instance? dateable
                java.util.Date dateable
                java.util.Calendar (.getTime ^Calendar dateable))]
     (case style
