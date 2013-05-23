@@ -30,6 +30,9 @@
 (defn- minutes [c] (get-filed c Calendar/MINUTE))
 (defn- seconds [c] (get-filed c Calendar/SECOND))
 
+(defn- before-ago-str [abtw btw unit num]
+  (format "%.0f%s%s" (/ abtw num) unit (if (pos? btw) "前" "后")))
+
 (defn- pretty-date-simple [that]
   (let [now (moment)
         now-time (.getTime ^Date now)
@@ -38,12 +41,11 @@
         abtw (Math/abs btw)]
         (cond
           (< abtw 10) "刚刚"
-          (< abtw 60) (format "%.0f秒%s" abtw (if (pos? btw) "前" "后"))
-          (< abtw (* 60 60)) (format "%.0f分%s" (/ abtw 60) (if (pos? btw) "前" "后"))
-          (< abtw (* 60 60 24)) (format "%.0f小时%s" (/ abtw (* 60 60)) (if (pos? btw) "前" "后"))
-          (< abtw (* 60 60 24 365)) (format "%.0f天%s" (/ abtw (* 60 60 24)) (if (pos? btw) "前" "后"))
-          :else (format-date that "yyyy年M月d日")
-          )))
+          (< abtw 60) (before-ago-str abtw btw "秒" 1)
+          (< abtw 3600) (before-ago-str abtw btw "分" 60)
+          (< abtw (* 3600 24)) (before-ago-str abtw btw "小时" 3600)
+          (< abtw (* 3600 24 365)) (before-ago-str abtw btw "天" (* 24 3600))
+          :else (format-date that "yyyy年M月d日"))))
 
 (defn- stage-of-day [that]
   (let [h (hours that)]
