@@ -41,8 +41,8 @@
         abtw (Math/abs btw)]
         (cond
           (< abtw 10) "刚刚"
-          (< abtw 60) (before-ago-str abtw btw "秒" 1)
-          (< abtw 3600) (before-ago-str abtw btw "分" 60)
+          (< abtw 60) (before-ago-str abtw btw "秒钟" 1)
+          (< abtw 3600) (before-ago-str abtw btw "分钟" 60)
           (< abtw (* 3600 24)) (before-ago-str abtw btw "小时" 3600)
           (< abtw (* 3600 24 365)) (before-ago-str abtw btw "天" (* 24 3600))
           :else (format-date that "yyyy年M月d日"))))
