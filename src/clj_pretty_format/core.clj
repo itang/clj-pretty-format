@@ -9,43 +9,45 @@
 
 (defn pretty-format [this & args] (-pretty-format this args))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn abs [x] 
+  (if (neg? x) (- x) x))
 
 (defn- format-date [date pattern]
   (.format (SimpleDateFormat. pattern) date))
 
-(defn- date->calendar [d]
-  (doto (Calendar/getInstance) (.setTime d)))
+(defn- date->calendar [date]
+  (doto (Calendar/getInstance) (.setTime date)))
 
-(defn- get-filed [x f]
-  (let [c (if (instance? java.util.Date x)
+(defn- time-field [x f]
+  (let [c (if (instance? Date x)
             (date->calendar x)
             x)]
     (.get ^Calendar c f)))
 
-(defn- year [c] (get-filed c Calendar/YEAR))
-(defn- month [c] (get-filed c Calendar/MONTH))
-(defn- date [c] (get-filed c Calendar/DAY_OF_MONTH))
-(defn- hours [c] (get-filed c Calendar/HOUR_OF_DAY))
-(defn- minutes [c] (get-filed c Calendar/MINUTE))
-(defn- seconds [c] (get-filed c Calendar/SECOND))
+(defn- year [c] (time-field c Calendar/YEAR))
+(defn- month [c] (time-field c Calendar/MONTH))
+(defn- date [c] (time-field c Calendar/DAY_OF_MONTH))
+(defn- hours [c] (time-field c Calendar/HOUR_OF_DAY))
+#_(defn- minutes [c] (time-field c Calendar/MINUTE))
+#_(defn- seconds [c] (time-field c Calendar/SECOND))
 
 (defn- before-ago-str [abtw btw unit num]
   (format "%.0f%s%s" (/ abtw num) unit (if (pos? btw) "前" "后")))
 
-(defn- pretty-date-simple [that]
+(defn- pretty-format-date-simple [that]
   (let [now (moment)
         now-time (.getTime ^Date now)
         that-time (.getTime ^Date that)
         btw (/ (- now-time that-time) 1000.0)
-        abtw (Math/abs btw)]
-        (cond
-          (< abtw 10) "刚刚"
-          (< abtw 60) (before-ago-str abtw btw "秒钟" 1)
-          (< abtw 3600) (before-ago-str abtw btw "分钟" 60)
-          (< abtw (* 3600 24)) (before-ago-str abtw btw "小时" 3600)
-          (< abtw (* 3600 24 365)) (before-ago-str abtw btw "天" (* 24 3600))
-          :else (format-date that "yyyy年M月d日"))))
+        abtw (abs btw)]
+    (cond
+      (< abtw 10) "刚刚"
+      (< abtw 60) (before-ago-str abtw btw "秒钟" 1)
+      (< abtw 3600) (before-ago-str abtw btw "分钟" 60)
+      (< abtw (* 3600 24)) (before-ago-str abtw btw "小时" 3600)
+      (< abtw (* 3600 24 365)) (before-ago-str abtw btw "天" (* 24 3600))
+      :else (format-date that "yyyy年M月d日"))))
 
 (defn- stage-of-day [that]
   (let [h (hours that)]
@@ -59,41 +61,40 @@
       (and (>= h 18) (< h 24)) "今晚"
       :else "")))
 
-(defn- pretty-date-douban [that]
+(defn- pretty-format-date-douban [that]
   (let [now (moment)
         cal-now (doto (Calendar/getInstance) (.setTime now))
         cal-that (doto (Calendar/getInstance) (.setTime that))]
     (cond 
-     (= (year cal-now) (year cal-that))   ;;"今年"
-     (cond 
-      (= (month cal-now) (month cal-that)) ;; 当月
+      (= (year cal-now) (year cal-that))   ;;"今年"
       (cond 
-       (= (date cal-now) (date cal-that))  ;; 当天
-       (let [h (- (hours cal-now) (hours cal-that))
-             ah (Math/abs h)]
-         (if (< ah 3)                      ;; 3小时以内
-            (pretty-date-simple that)
-            (stage-of-day that)))
-       (> (date cal-now) (date cal-that))  ;;今天以前
-       (if (= (date cal-now) (-> cal-that date inc)) 
-        "昨天"
-        (format-date that "M月d日"))
-       :else                               ;;今天以后
-       (if (= (date cal-now) (-> cal-that date dec)) 
-        "明天"
-        (format-date that "M月d日")))
-      :else (format-date that "M月d日"))  ;; 今年非当月
-
-     :else (format-date that "yyyy年M月d日")))) ;;非今年
+        (= (month cal-now) (month cal-that)) ;; 当月
+        (cond 
+          (= (date cal-now) (date cal-that))  ;; 当天
+          (let [h (- (hours cal-now) (hours cal-that))
+                ah (abs h)]
+            (if (< ah 3)                      ;; 3小时以内
+              (pretty-format-date-simple that)
+              (stage-of-day that)))
+          (> (date cal-now) (date cal-that))  ;;今天以前
+          (if (= (date cal-now) (-> cal-that date inc)) 
+            "昨天"
+            (format-date that "M月d日"))
+          :else                               ;;今天以后
+          (if (= (date cal-now) (-> cal-that date dec)) 
+            "明天"
+            (format-date that "M月d日")))
+        :else (format-date that "M月d日"))  ;; 今年非当月
+      :else (format-date that "yyyy年M月d日")))) ;;非今年
 
 (defn- pretty-format-date
   [dateable & [{:keys [style] :or {style :douban} :as opts}]]
   (let [date (condp instance? dateable
-               java.util.Date dateable
-               java.util.Calendar (.getTime ^Calendar dateable))]
+               Date dateable
+               Calendar (.getTime ^Calendar dateable))]
     (case style
-      :douban (pretty-date-douban date)
-      (pretty-date-simple date))))
+      :douban (pretty-format-date-douban date)
+      (pretty-format-date-simple date))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (extend java.util.Date
