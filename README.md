@@ -2,19 +2,13 @@
 
 A Clojure library designed to pretty format data well, that part is up to you.
 
+## Install
+
+To install clj-pretty-format, add the following dependency to your project.clj file:
+
+        [clj-pretty-format "0.1"]
+
 ## Usage
-
-prepare:
-
-        $ git clone https://github.com/itang/cljtang.git && cd cljtang && lein install
-        $ git clone https://github.com/itang/lein-checkall.git && cd lein-checkall && lein install
-
-        $ git clone https://github.com/itang/clj-pretty-format.git
-        $ cd clj-pretty-format
-        $ lein checkall && lein test
-        $ lein install
-
-use:
 
         user=> (use 'clj-pretty-format.core)
         user=> (pretty-format (java.util.Date.) :style :douban)
