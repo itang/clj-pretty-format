@@ -8,17 +8,17 @@
     (spit "./target/pretty-format.txt" [
       (pretty-format (Date.))
       (pretty-format (Date. 100 0 1))
-  
+
       (pretty-format (Date. 112 0 1))
-  
+
       (pretty-format (Date. 113 0 1))
-  
+
       (pretty-format (Date. 113 3 1))
-  
+
       (pretty-format (Date. 113 4 1))
-  
+
       (pretty-format (Date. 113 4 20))
-  
+
       (pretty-format (Date. 113 4 23 0 0 ))
       (pretty-format (Date. 113 4 23 1 0 ))
       (pretty-format (Date. 113 4 23 2 0 ))
@@ -43,12 +43,12 @@
       (pretty-format (Date. 113 4 23 23 0 ))
       (pretty-format (Date. 113 4 23 23 0 ))
       (pretty-format (Date. 113 4 23 23 0 ))
-  
+
       (pretty-format (Date. 113 4 23))
-  
+
       (pretty-format (Date. 113 4 23))
-  
+
       (pretty-format (Date. 113 5 23))
-  
+
       (pretty-format (Date. 114 1 1))
       (pretty-format (Date. 114 1 1) :style :simple)])))
