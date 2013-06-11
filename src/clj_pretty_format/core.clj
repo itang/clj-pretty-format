@@ -1,7 +1,7 @@
 (ns clj-pretty-format.core
   (:import [java.util Date Calendar]
            java.text.SimpleDateFormat)
-  (:require [cljtang.core :refer [moment]]))
+  (:require [cljtang.core :refer [abs moment format-date]]))
 
 (defprotocol PrettyFormatable
   "data with pretty format"
@@ -10,12 +10,6 @@
 (defn pretty-format [this & args] (-pretty-format this args))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn abs [x]
-  (if (neg? x) (- x) x))
-
-(defn- format-date [date pattern]
-  (.format (SimpleDateFormat. pattern) date))
-
 (defn- date->calendar [date]
   (doto (Calendar/getInstance) (.setTime date)))
 

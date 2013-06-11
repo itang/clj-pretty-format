@@ -6,7 +6,7 @@ A Clojure library designed to pretty format data well, that part is up to you.
 
 To install clj-pretty-format, add the following dependency to your project.clj file:
 
-        [clj-pretty-format "0.1"]
+        [clj-pretty-format "0.1.1"]
 
 ## Usage
 
